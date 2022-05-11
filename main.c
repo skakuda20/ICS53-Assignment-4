@@ -46,13 +46,101 @@ void allocateBlock(int sz){
   }
 }
 
+void init(){
+  heap[0] = 62
+  heap[63] = 62
+
+  int i;
+  for (i = 1; i <63; i++){
+    heap[i] = 0;  
+  }
+  
+}
+
+void tokenize(char *input, char *args[MAXARGS])
+{
+  //char **argv;
+  int i = 0;
+  char *token = strtok(input, " \n");
+  do
+  {
+    args[i] = token;
+    i++;
+  }
+  while ((token = strtok(NULL, " \n")));
+
+}
+
+void p_malloc(int size)
+{
+  
+}
+
+void p_free(int index){
+  
+}
 
 
+void p_blocklist()
+{
+  
+}
+
+void write_m(int index, char* str){
+  
+}
 
 
-int main(void) {
+void print_m(int index, int n){
+  
+}
+
+void execute(char* argv[MAXARGS])
+{
+  char *command = argv[0];
+
+  if (strcmp(command, "malloc") == 0)
+  {
+    p_malloc(atoi(argv[1]));
+    
+  }
+  else if (strcmp(command, "free") == 0)
+  {
+    p_free(atoi(argv[1]);
+  }
+  else if (strcmp(command, "blocklist") == 0)
+  {
+    p_blocklist(atoi(argv[1]));
+  }
+  else if (strcmp(command, "writememe") == 0)
+  {
+    write_m(atoi(argv[1]), argv[2]);
+  }
+  else if (strcmp(command, "printmeme") == 0)
+  {
+    print_m(atoi(argv[1]), atoi(argv[2]);
+  }
+  
+}
+
+void loop() {
+  char input[100];
+  char *args[MAXARGS];
+  do {
+    printf("> ");
+    fgets(input, 80, stdin);
+    //args = tokenize((char *) input);
+    tokenize((char *)input, args);
+    if (strcmp(args[0], "quit") == 0)
+      exit(0);
+    execute(args);
+  } while (1);
+}
+
+
+int main(int argc, char** argv) {
   unsigned char heap[64];
-
-  printf("Hello World\n");
+  init();
+  loop();
   return 0;
 }
