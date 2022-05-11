@@ -5,6 +5,14 @@
 // - bitwise shift to remove allocation status (header & 0xFE) >> 1
 
 
+bool blockIsFree(int heap_node)
+{
+  if (heap_node & 1 == 1)
+    return false
+  else
+    return true
+}
+
 
 // find next block’s header
 int next_header = current_footer + 1 
@@ -39,11 +47,41 @@ void allocateBlock(int sz){
   int i = 0; // pointer to beginning of heap
   int found = 0; // a flag 
   while (!found && i < 64){
-    if (blockIsFree(heap[i]) && (getSize(heap[i])-2)>= sz)
+    if (blockIsFree(heap[i]) && (getSize(heap[i])-2)>= sz) // maybe check if vald bit and length in same function?
      // block is free and fits the requested size
       found = 1; break; 
        i += getSize(heap[i]); // go to header of next block 
   }
+
+  '''
+  // Code from slides:
+  p = start; 
+  while ((p < end) && ((*p & 1) || (*p <= len))) 
+    p = p + (*p & -2);    \\ goto next block (word addressed)
+
+  int i = 0;
+  int found = 0;
+
+  while ((i < 63) && (heap[i] & 1 == 1) || (heap[i] < sz + 2)) // Check to see if there is free room for length + 2 (header/footer)
+    i++;
+
+  if (i < 63){
+    // Allocate block in heap
+    header = sz | 1;
+    heap[i] = header
+    // Set subsequent nodes in heap to 1
+    int j;
+    for (j = 0; j < sz; j++)
+      heap[i + j] = 1;
+    heap[i + j + 1] = header;
+  }
+  else{
+    // Return error
+  }
+
+
+  '''
+
 }
 
 void init(){
