@@ -4,41 +4,36 @@
 // - bitwise AND with 0b 1111 1110
 // - bitwise shift to remove allocation status (header & 0xFE) >> 1
 
+unsigned char heap[64];
 
-bool blockIsFree(int heap_node)
+
+int blockIsFree(int heap_node)
 {
-  if (heap_node & 1 == 1)
-    return false
+  if (heap_node % 2 == 1)
+    return 0;
   else
-    return true
+    return 1;
+}
+
+int findFirstFree()
+{
+  if (blockIsFree(heap[0]) == 1){
+    return 0;
+  }
+  else
+  {
+    do{
+      int index = getSize(heap[0]) + 2;
+    }while(blockIsFree(heap[index]) != 1);
+
+    return index;
+  }
 }
 
 
-// find next block’s header
-int next_header = current_footer + 1 
-if (current_footer < 63 && blockIsFree(heap[next_header])){
- // perform forward coalescing
- // (1) change current_header’s block size to account
- // for next_header’s block size 
- // (2) update next_footer’s block size. Current_footer
- // now becomes part of the payload 
- // (3) zero’d out each byte of payload. NOTE: this is an
- // requirement for this assignment. Real malloc will
- // not do this because of speed!
-
-// find previous block’s footer
-int previous_footer = current_header - 1 
-if (current_header > 0 && blockIsFree(heap[previous_footer])){
- // perform backward coalescing
- // (1) update previous_header’s block size. current_header 
- // now becomes part of the payload
- // go to previous header
-  int previous_header = previous_footer + 1 - previous_block_size
- // (2) change current_footer’s block size to account
- // for previous_header’s block size 
- // (3) zero’d out each byte of payload. NOTE: this is an
- // requirement for this assignment. Real malloc will
- // not do this because of speed!
+int getSize(int header)
+{
+  return header / 2;
 }
 
 
@@ -46,45 +41,50 @@ if (current_header > 0 && blockIsFree(heap[previous_footer])){
 void allocateBlock(int sz){
   int i = 0; // pointer to beginning of heap
   int found = 0; // a flag 
-  while (!found && i < 64){
-    if (blockIsFree(heap[i]) && (getSize(heap[i])-2)>= sz) // maybe check if vald bit and length in same function?
-     // block is free and fits the requested size
-      found = 1; break; 
-       i += getSize(heap[i]); // go to header of next block 
-  }
+  
+  // while (!found && i < 64){
+  //   if (blockIsFree(heap[i]) && (getSize(heap[i])-2)>= sz) // maybe check if vald bit and length in same function?
+  //    // block is free and fits the requested size
+  //     found = 1; break; 
+  //      i += getSize(heap[i]); // go to header of next block 
+  // }
 
-  '''
-  // Code from slides:
-  p = start; 
-  while ((p < end) && ((*p & 1) || (*p <= len))) 
-    p = p + (*p & -2);    \\ goto next block (word addressed)
+  int start = findFirstFree()
+  
+  
 
-  int i = 0;
-  int found = 0;
+  // '''
+  // // Code from slides:
+  // p = start; 
+  // while ((p < end) && ((*p & 1) || (*p <= len))) 
+  //   p = p + (*p & -2);    \\ goto next block (word addressed)
 
-  while ((i < 63) && (heap[i] & 1 == 1) || (heap[i] & -2 < sz + 2)) // Check to see if there is free room for length + 2 (header/footer)
-    i++;
+  // int i = 0;
+  // int found = 0;
 
-  if (i < 63){
-    // Allocate block in heap
-    header = sz | 1;
-    heap[i] = header
-    // Set subsequent nodes in heap to 1
-    int j;
-    for (j = 0; j < sz; j++)
-      heap[i + j] = 1;
-    heap[i + j + 1] = header;
-    printf (i + 1);
-  }
-  else{
-    // Return error
-  }
-  '''
+  // while ((i < 63) && (heap[i] & 1 == 1) || (heap[i] & -2 < sz + 2)) // Check to see if there is free room for length + 2 (header/footer)
+  //   i++;
+
+  // if (i < 63){
+  //   // Allocate block in heap
+  //   header = sz | 1;
+  //   heap[i] = header
+  //   // Set subsequent nodes in heap to 1
+  //   int j;
+  //   for (j = 0; j < sz; j++)
+  //     heap[i + j] = 1;
+  //   heap[i + j + 1] = header;
+  //   printf (i + 1);
+  // }
+  // else{
+  //   // Return error
+  // }
+  // '''
 }
 
-void free(int index){
+void p_free(int index){
   // Can assume argument is a pointer to correct address of PAYLOAD (not header)
-  int size = heap[index - 1] & -2;
+  int size = getSize(heap[index-1]);
   int i;
   // Set least significant header bit to 0
   heap[index - 1] = size & -2;
@@ -161,8 +161,8 @@ void blocklist()
 
 
 void init(){
-  heap[0] = 62
-  heap[63] = 62
+  heap[0] = 62 << 1
+  heap[63] = 62 << 1
 
   int i;
   for (i = 1; i <63; i++){
@@ -185,20 +185,6 @@ void tokenize(char *input, char *args[MAXARGS])
 
 }
 
-void p_malloc(int size)
-{
-  
-}
-
-void p_free(int index){
-  
-}
-
-
-void p_blocklist()
-{
-  
-}
 
 void write_m(int index, char* str){
   
@@ -215,7 +201,7 @@ void execute(char* argv[MAXARGS])
 
   if (strcmp(command, "malloc") == 0)
   {
-    p_malloc(atoi(argv[1]));
+    allocateBlock(atoi(argv[1]));
     
   }
   else if (strcmp(command, "free") == 0)
@@ -224,7 +210,7 @@ void execute(char* argv[MAXARGS])
   }
   else if (strcmp(command, "blocklist") == 0)
   {
-    p_blocklist(atoi(argv[1]));
+    blocklist(atoi(argv[1]));
   }
   else if (strcmp(command, "writememe") == 0)
   {
@@ -253,7 +239,6 @@ void loop() {
 
 
 int main(int argc, char** argv) {
-  unsigned char heap[64];
   init();
   loop();
   return 0;
