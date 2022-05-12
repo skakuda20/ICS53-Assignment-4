@@ -83,10 +83,6 @@ void allocateBlock(int sz){
 }
 
 void free(int index){
-  int currentHeaderIndex;
-  int currentFooterIndex;
-  int currentBlockSize;
-
   // Can assume argument is a pointer to correct address of PAYLOAD (not header)
   int size = heap[index - 1] & -2;
   int i;
@@ -100,9 +96,10 @@ void free(int index){
   // Clear allocated flag in footer
   heap[index + i + 1] = size & -2;
 
-  currentBlockSize = size;
-  currentHeaderIndex = index - 1;
-  currentFooterIndex = index + size;
+  // Set current variables before checking for forward or backward coalescing
+  int currentBlockSize = size;
+  int currentHeaderIndex = index - 1;
+  int currentFooterIndex = index + size;
 
   // TODO: Add coalescing functionality
     // Maybe check previous block first before freeing current block
@@ -147,7 +144,6 @@ void blocklist()
 {
   // Print out all info regarding each allocated and free block
   // Format: start index of PAYLOAD (not header), size of block, allocaton status (allocated or free)
-
   int i;
   while (i < 63) {
     int currentBlockSize = heap[i] & -2;
