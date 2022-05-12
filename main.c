@@ -142,6 +142,28 @@ void free(int index){
 
 }
 
+
+void blocklist()
+{
+  // Print out all info regarding each allocated and free block
+  // Format: start index of PAYLOAD (not header), size of block, allocaton status (allocated or free)
+
+  int i;
+  while (i < 63) {
+    int currentBlockSize = heap[i] & -2;
+    int currentAllocationStatus = heap[i] & 1;
+    printf("%d, %d, ", i + 1, currentBlockSize);
+    if (currentAllocationStatus == 0)
+      printf("free.\n");
+    else
+      printf("allocated.\n");
+    i = i + currentBlockSize + 1;
+  }
+
+}
+
+
+
 void init(){
   heap[0] = 62
   heap[63] = 62
