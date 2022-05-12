@@ -126,6 +126,19 @@ void free(int index){
   }
   
   // Check if previous block is free (backward coalescing)
+  previousFooterIndex = currentHeaderIndex - 1;
+  if (heap[previousFooterIndex] & 1 == 0){
+    // TODO: Implement backward coalescing
+    // Get size of prev free block
+    int prevBlockSize = heap[previousFooterIndex] & -2;
+    currentBlockSize = currentBlockSize + previous_block_size;
+    // Clear currentHeader and prevFooter
+    heap[currentHeaderIndex] = 0;
+    heap[previousFooterIndex] = 0;
+    // Update prevHeader to currentHeader
+    currentHeaderIndex = currentHeaderIndex - prevBlockSize - 2;
+    heap[currentHeaderIndex] = currentBlockSize & -2;
+  }
 
 }
 
