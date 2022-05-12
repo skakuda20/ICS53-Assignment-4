@@ -23,7 +23,7 @@ int blockIsFree(int heap_node)
 
 int getSize(int header)
 {
-  return header / 2;
+  return (header / 2)-2;
 }
 
 
@@ -64,20 +64,20 @@ void allocateBlock(int sz){
   if (len > sz + 2)
   {
     // need splitting TO DO:
-    heap[start] = (sz << 1) + 1;
+    heap[start] = ((sz+2) << 1) + 1;
     int i;
     for (i = 1; i<=sz; i++){
       heap[start+i] = 1;
     }
-    heap[start+i] = (sz << 1) + 1;
+    heap[start+i] = ((sz+2) << 1) + 1;
 
 
     printf("%d\n", heap[start]);
     printf("%d\n", getSize(heap[start]));
 
     int nl = len - (sz+2);
-    heap[start+i+1] = nl << 1;
-    heap[start+i+1+nl+1] = nl << 1;
+    heap[start+i+1] = (nl+2) << 1;
+    heap[start+i+1+nl+1] = (nl+2) << 1;
 
     printf("%d\n",  start+i+1);
     printf("%d\n", getSize(heap[start+i+1]));
@@ -85,12 +85,12 @@ void allocateBlock(int sz){
   }
   else
   {
-    heap[start] = (len << 1) + 1;
+    heap[start] = ((len+2) << 1) + 1;
     int i;
     for (i = 1; i<len; i++){
       heap[start+i] = 1;
     }
-    heap[start+i] = (len << 1) + 1;
+    heap[start+i] = ((len+2) << 1) + 1;
   }
 
   printf("%d\n", start+1);
@@ -131,7 +131,7 @@ void p_free(int index){
   int size = getSize(heap[index-1]);
   int i;
   // Set least significant header bit to 0
-  heap[index - 1] = size << 1;
+  heap[index - 1] = (size+2) << 1;
   // Set payload nodes to 0
   for (i = 0; i < size; i++)
   {
@@ -139,7 +139,7 @@ void p_free(int index){
   }
   // Clear allocated flag in footer
   printf("%d\n", i);
-  heap[index + i] = size << 1;
+  heap[index + i] = (size+2) << 1;
 
   // Set current variables before checking for forward or backward coalescing
   int currentBlockSize = size;
@@ -166,9 +166,9 @@ void p_free(int index){
       heap[nextHeaderIndex] = 0;
     // Update nextBlockFooter
       currentFooterIndex = currentFooterIndex + nextBlockSize + 2;
-      heap[currentFooterIndex] = currentBlockSize << 1;                 // CHECK IF FOOTER BEING SET CORRECTLY (storing size of block and 0 flag)
+      heap[currentFooterIndex] = (currentBlockSize+2) << 1;                 // CHECK IF FOOTER BEING SET CORRECTLY (storing size of block and 0 flag)
     // Update currentHeader
-      heap[currentHeaderIndex] = currentBlockSize << 1;
+      heap[currentHeaderIndex] = (currentBlockSize+2) << 1;
     }
   }
   
@@ -181,14 +181,14 @@ void p_free(int index){
     if (blockIsFree(heap[previousFooterIndex])){
     // TODO: Implement backward coalescing
     // Get size of prev free block
-      int prevBlockSize = heap[previousFooterIndex] << 1;
+      int prevBlockSize = (heap[previousFooterIndex]+2) << 1;
       currentBlockSize = currentBlockSize + prevBlockSize;
     // Clear currentHeader and prevFooter
       heap[currentHeaderIndex] = 0;
       heap[previousFooterIndex] = 0;
     // Update prevHeader to currentHeader
       currentHeaderIndex = currentHeaderIndex - prevBlockSize - 2;
-      heap[currentHeaderIndex] = currentBlockSize << 1;
+      heap[currentHeaderIndex] = (currentBlockSize+2) << 1;
     }
 
   }
@@ -218,8 +218,8 @@ void blocklist()
 
 
 void init(){
-  heap[0] = 62 << 1;
-  heap[63] = 62 << 1;
+  heap[0] = 64 << 1;
+  heap[63] = 64 << 1;
 
   int i;
   for (i = 1; i <63; i++){
