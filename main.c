@@ -62,7 +62,7 @@ void allocateBlock(int sz){
   int i = 0;
   int found = 0;
 
-  while ((i < 63) && (heap[i] & 1 == 1) || (heap[i] < sz + 2)) // Check to see if there is free room for length + 2 (header/footer)
+  while ((i < 63) && (heap[i] & 1 == 1) || (heap[i] & -2 < sz + 2)) // Check to see if there is free room for length + 2 (header/footer)
     i++;
 
   if (i < 63){
@@ -78,10 +78,24 @@ void allocateBlock(int sz){
   else{
     // Return error
   }
-
-
   '''
+}
 
+void free(int index){
+  // Can assume argument is a pointer to correct address
+  int size = heap[index] & -2;
+  int i;
+  // Set least significant header bit to 0
+  heap[index] = size & -2;
+  // Set payload nodes to 0
+  for (i = 0; i < size; i++)
+  {
+    heap[index + i + 1] = 0;
+  }
+  // Clear allocated flag in footer
+  heap[index + i + 2] = size & -2;
+
+  // Add coalescing 
 }
 
 void init(){
