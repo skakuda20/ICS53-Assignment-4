@@ -74,6 +74,7 @@ void allocateBlock(int sz){
     for (j = 0; j < sz; j++)
       heap[i + j] = 1;
     heap[i + j + 1] = header;
+    printf (i + 1);
   }
   else{
     // Return error
@@ -82,20 +83,28 @@ void allocateBlock(int sz){
 }
 
 void free(int index){
-  // Can assume argument is a pointer to correct address
-  int size = heap[index] & -2;
+  // Can assume argument is a pointer to correct address of PAYLOAD (not header)
+  int size = heap[index - 1] & -2;
   int i;
   // Set least significant header bit to 0
-  heap[index] = size & -2;
+  heap[index - 1] = size & -2;
   // Set payload nodes to 0
   for (i = 0; i < size; i++)
   {
-    heap[index + i + 1] = 0;
+    heap[index + i] = 0;
   }
   // Clear allocated flag in footer
-  heap[index + i + 2] = size & -2;
+  heap[index + i + 1] = size & -2;
 
-  // Add coalescing 
+  // TODO: Add coalescing functionality
+    // Maybe check previous block first before freeing current block
+    // Make new variables for current header index and total block size(to account for possible backward coalescing)
+  
+  // Check if next block is free
+  if (heap[index + i + 2] & 1 == 0){
+    // Implement forward coalescing
+  }
+
 }
 
 void init(){
