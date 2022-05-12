@@ -1,4 +1,9 @@
 #include <stdio.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#define MAXARGS 3
 
 // to get block size
 // - bitwise AND with 0b 1111 1110
@@ -15,21 +20,6 @@ int blockIsFree(int heap_node)
     return 1;
 }
 
-int findFirstFree()
-{
-  if (blockIsFree(heap[0]) == 1){
-    return 0;
-  }
-  else
-  {
-    do{
-      int index = getSize(heap[0]) + 2;
-    }while(blockIsFree(heap[index]) != 1);
-
-    return index;
-  }
-}
-
 
 int getSize(int header)
 {
@@ -37,10 +27,29 @@ int getSize(int header)
 }
 
 
+int findFirstFree()
+{
+  if (blockIsFree(heap[0]) == 1){
+    return 0;
+  }
+  else
+  {
+    int index;
+    do{
+      index = getSize(heap[0]) + 2;
+    }while(blockIsFree(heap[index]) != 1);
+
+    return index;
+  }
+}
+
+
+
+
 
 void allocateBlock(int sz){
-  int i = 0; // pointer to beginning of heap
-  int found = 0; // a flag 
+  //int i = 0; // pointer to beginning of heap
+  //int found = 0; // a flag 
   
   // while (!found && i < 64){
   //   if (blockIsFree(heap[i]) && (getSize(heap[i])-2)>= sz) // maybe check if vald bit and length in same function?
@@ -49,8 +58,40 @@ void allocateBlock(int sz){
   //      i += getSize(heap[i]); // go to header of next block 
   // }
 
-  int start = findFirstFree()
-  
+  int start = findFirstFree();
+  int len = getSize(heap[start]);
+
+  if (len > sz + 2)
+  {
+    // need splitting TO DO:
+    heap[start] = (sz << 1) + 1;
+    int i;
+    for (i = 1; i<=sz; i++){
+      heap[start+i] = 1;
+    }
+    heap[start+i] = (sz << 1) + 1;
+
+
+    printf("%d\n", heap[start]);
+    printf("%d\n", getSize(heap[start]));
+
+    int nl = len - (sz+2);
+    heap[start+i+1] = nl << 1;
+    heap[start+i+1+nl+1] = nl << 1;
+
+  }
+  else
+  {
+    heap[start] = (len << 1) + 1;
+    int i;
+    for (i = 1; i<len; i++){
+      heap[start+i] = 1;
+    }
+    heap[start+i] = (len << 1) + 1;
+  }
+
+  printf("%d\n", start+1);
+
   
 
   // '''
@@ -106,12 +147,12 @@ void p_free(int index){
     // Make new variables for current header index and total block size(to account for possible backward coalescing)
 
   // Check if next block is free (forward coalescing)
-  nextHeaderIndex = currentFooterIndex + 1;
-  if (heap[nextHeaderIndex] & 1 == 0){
+  int nextHeaderIndex = currentFooterIndex + 1;
+  if (blockIsFree(heap[nextHeaderIndex])){
     // TODO: Implement forward coalescing
     // Get size of free block
-    int nextBlockSize = heap[nextHeaderIndex] & -2;
-    currentBlockSize = currentBlockSize + nextBlockSize;
+    int nextBlockSize = getSize(heap[nextHeaderIndex]);
+    currentBlockSize = currentBlockSize + nextBlockSize + 2;
     // Clear currentFooter and nextHeader
     heap[currentFooterIndex] = 0;
     heap[nextHeaderIndex] = 0;
@@ -123,12 +164,12 @@ void p_free(int index){
   }
   
   // Check if previous block is free (backward coalescing)
-  previousFooterIndex = currentHeaderIndex - 1;
-  if (heap[previousFooterIndex] & 1 == 0){
+  int previousFooterIndex = currentHeaderIndex - 1;
+  if (blockIsFree(heap[previousFooterIndex])){
     // TODO: Implement backward coalescing
     // Get size of prev free block
     int prevBlockSize = heap[previousFooterIndex] & -2;
-    currentBlockSize = currentBlockSize + previous_block_size;
+    currentBlockSize = currentBlockSize + prevBlockSize;
     // Clear currentHeader and prevFooter
     heap[currentHeaderIndex] = 0;
     heap[previousFooterIndex] = 0;
@@ -145,15 +186,16 @@ void blocklist()
   // Print out all info regarding each allocated and free block
   // Format: start index of PAYLOAD (not header), size of block, allocaton status (allocated or free)
   int i;
+  i = 0;
   while (i < 63) {
-    int currentBlockSize = heap[i] & -2;
-    int currentAllocationStatus = heap[i] & 1;
+    int currentBlockSize = getSize(heap[i]);
+    int currentAllocationStatus = heap[i] % 2;
     printf("%d, %d, ", i + 1, currentBlockSize);
     if (currentAllocationStatus == 0)
       printf("free.\n");
     else
       printf("allocated.\n");
-    i = i + currentBlockSize + 1;
+    i = i + currentBlockSize + 2;
   }
 
 }
@@ -161,8 +203,8 @@ void blocklist()
 
 
 void init(){
-  heap[0] = 62 << 1
-  heap[63] = 62 << 1
+  heap[0] = 62 << 1;
+  heap[63] = 62 << 1;
 
   int i;
   for (i = 1; i <63; i++){
@@ -206,11 +248,11 @@ void execute(char* argv[MAXARGS])
   }
   else if (strcmp(command, "free") == 0)
   {
-    p_free(atoi(argv[1]);
+    p_free(atoi(argv[1]));
   }
   else if (strcmp(command, "blocklist") == 0)
   {
-    blocklist(atoi(argv[1]));
+    blocklist();
   }
   else if (strcmp(command, "writememe") == 0)
   {
@@ -218,7 +260,7 @@ void execute(char* argv[MAXARGS])
   }
   else if (strcmp(command, "printmeme") == 0)
   {
-    print_m(atoi(argv[1]), atoi(argv[2]);
+    print_m(atoi(argv[1]), atoi(argv[2]));
   }
   
 }
