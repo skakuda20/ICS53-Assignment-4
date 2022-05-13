@@ -6,4 +6,6 @@ malloc 4
 free 13
 free 20
 blocklist
+writemem 5 ABC
+printmem 5 3
 quit
