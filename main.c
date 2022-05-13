@@ -225,12 +225,12 @@ int printHex(int dec){
       i++;
     }
     else{
-      hexa[i] = temp + 55
+      hexa[i] = temp + 55;
     }
     dec = dec / 16;
   }
   for (int j = i - 1; j >= 0; j--)
-    printf("c ", hexa[j]);
+    printf("%c", hexa[j]);
 }
 
 void printmem(int index, int numPrint){
