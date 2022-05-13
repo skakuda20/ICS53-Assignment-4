@@ -214,10 +214,30 @@ void writemem(int index, char* str){
   }
 }
 
+int printHex(int dec){
+  int i = 0;
+  char hexa[100];
+  while (dec != 0){
+    int temp = 0;
+    temp = dec % 16;
+    if (temp < 10){
+      hexa[i] = temp + 48;
+      i++;
+    }
+    else{
+      hexa[i] = temp + 55
+    }
+    dec = dec / 16;
+  }
+  for (int j = i - 1; j >= 0; j--)
+    printf("c ", hexa[j]);
+}
+
 void printmem(int index, int numPrint){
   int i;
   for (i = 0; i < numPrint; i++){
-    printf("%d ", heap[index + i]);
+    int dec = heap[index + 1];
+    printHex(dec);
   }
   printf("\n");
 }
