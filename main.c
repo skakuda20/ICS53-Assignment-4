@@ -206,6 +206,14 @@ void blocklist()
 
 }
 
+void writemem(int index, char* str){
+  int i = 0;
+  while (str[i] != '\0'){
+    heap[index + i] = str[i];
+    i++;
+  }
+}
+
 
 
 void init(){
