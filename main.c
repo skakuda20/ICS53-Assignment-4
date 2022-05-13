@@ -214,7 +214,7 @@ void writemem(int index, char* str){
   }
 }
 
-int printHex(int dec){
+void printHex(int dec){
   int i = 0;
   char hexa[100];
   while (dec != 0){
@@ -236,10 +236,12 @@ int printHex(int dec){
 void printmem(int index, int numPrint){
   int i;
   for (i = 0; i < numPrint; i++){
-    int dec = heap[index + 1];
+    int dec = heap[index + i];
     printHex(dec);
+    printf(" ");
   }
-  printf("\n");
+  if (i > 0)
+    printf("\n");
 }
 
 
@@ -287,11 +289,11 @@ void execute(char* argv[MAXARGS])
   {
     blocklist();
   }
-  else if (strcmp(command, "writememe") == 0)
+  else if (strcmp(command, "writemem") == 0)
   {
     writemem(atoi(argv[1]), argv[2]);
   }
-  else if (strcmp(command, "printmeme") == 0)
+  else if (strcmp(command, "printmem") == 0)
   {
     printmem(atoi(argv[1]), atoi(argv[2]));
   }
