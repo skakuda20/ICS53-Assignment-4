@@ -249,14 +249,6 @@ void tokenize(char *input, char *args[MAXARGS])
 }
 
 
-void write_m(int index, char* str){
-  
-}
-
-
-void print_m(int index, int n){
-  
-}
 
 void execute(char* argv[MAXARGS])
 {
@@ -277,11 +269,11 @@ void execute(char* argv[MAXARGS])
   }
   else if (strcmp(command, "writememe") == 0)
   {
-    write_m(atoi(argv[1]), argv[2]);
+    writemem(atoi(argv[1]), argv[2]);
   }
   else if (strcmp(command, "printmeme") == 0)
   {
-    print_m(atoi(argv[1]), atoi(argv[2]));
+    printmem(atoi(argv[1]), atoi(argv[2]));
   }
   
 }
