@@ -214,6 +214,13 @@ void writemem(int index, char* str){
   }
 }
 
+void printmem(int index, int numPrint){
+  int i;
+  for (i = 0; i < numPrint; i++){
+    printf("%d ", ord(heap[index + i]));
+  }
+  printf("\n");
+}
 
 
 void init(){
