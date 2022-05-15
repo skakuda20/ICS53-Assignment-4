@@ -5,8 +5,4 @@ malloc 2
 malloc 4
 free 13
 free 20
-blocklist
-printmem 5 3
-writemem 5 ABC
-printmem 5 3
 quit

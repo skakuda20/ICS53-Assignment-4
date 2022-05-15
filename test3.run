@@ -1,0 +1,5 @@
+malloc 20
+malloc 8
+free 1
+malloc 2
+quit

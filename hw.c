@@ -229,7 +229,8 @@ void printHex(int dec){
     }
     dec = dec / 16;
   }
-  for (int j = i - 1; j >= 0; j--)
+  int j;
+  for (j = i - 1; j >= 0; j--)
     printf("%c", hexa[j]);
 }
 

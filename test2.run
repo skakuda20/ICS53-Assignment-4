@@ -1,0 +1,4 @@
+printmem 5 3
+writemem 5 ABCO
+printmem 5 4
+quit
